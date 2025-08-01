@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KiddieFarm - Abandoned Digital Souls</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Comic+Neue:wght@400;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            font-family: 'Comic Neue', cursive;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        #gameCanvas {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                linear-gradient(180deg, 
+                    #4a5a6a 0%, 
+                    #6b7b8b 20%, 
+                    #8a9a7a 40%, 
+                    #7a8a6a 60%, 
+                    #6a7a5a 80%, 
+                    #5a6a4a 100%
+                );
+            filter: saturate(0.6) brightness(0.8);
+            animation: glitchBackground 20s infinite;
+            overflow: hidden;
+        }
+        
+        @keyframes glitchBackground {
+            0%, 90% { filter: saturate(0.6) brightness(0.8); }
+            92% { filter: saturate(0.2) brightness(0.6) hue-rotate(90deg); }
+            94% { filter: saturate(0.6) brightness(0.8); }
+            96% { filter: saturate(0) brightness(0.4); }
+            98% { filter: saturate(0.6) brightness(0.8); }
+        }
+        
+        /* Celestial Body with Face */
+        .celestial-body {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: 50px;
+            right: 100px;
+            background: 
+                radial-gradient(circle at 30% 30%, 
+                    #fff8dc 0%, 
+                    #ffd700 30%, 
+                    #ffb347 60%, 
+                    #ff8c00 90%,
+                    #ff6b00 100%
+                );
+            border-radius: 50%;
+            box-shadow: 
+                0 0 50px rgba(255,140,0,0.5),
+                0 0 100px rgba(255,140,0,0.3),
+                inset -10px -10px 20px rgba(0,0,0,0.3);
+            animation: celestialPulse 10s infinite;
+        }
+        
+        @keyframes celestialPulse {
+            0%, 100% { 
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% { 
+                transform: scale(1.05);
+                filter: brightness(1.2);
+            }
+        }
+        
+        .celestial-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        
+        .celestial-eye {
+            position: absolute;
+            width: 25px;
+            height: 30px;
+            background: #2a1a1a;
+            border-radius: 50%;
+            top: 35px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        
+        .celestial-eye.left {
+            left: 25px;
+            transform: rotate(-10deg);
+        }
+        
+        .celestial-eye.right {
+            right: 25px;
+            transform: rotate(10deg);
+        }
+        
+        .celestial-eye::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #8b0000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: eyeGlow 3s infinite;
+        }
+        
+        @keyframes eyeGlow {
+            0%, 100% { box-shadow: 0 0 5px #ff0000; }
+            50% { box-shadow: 0 0 15px #ff0000; }
+        }
+        
+        .celestial-mouth {
+            position: absolute;
+            width: 50px;
+            height: 25px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom: 4px solid #2a1a1a;
+            border-radius: 0 0 50% 50%;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5);
+        }
+        
+        .celestial-mouth::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: #8b0000;
+            bottom: -4px;
+            animation: mouthTwitch 8s infinite;
+        }
+        
+        @keyframes mouthTwitch {
+            0%, 90% { transform: scaleX(1); }
+            92% { transform: scaleX(1.2); }
+            94% { transform: scaleX(0.8); }
+            96%, 100% { transform: scaleX(1); }
+        }
+        
+        /* Enhanced Farm Environment */
+        .grass-patch {
+            position: absolute;
+            width: 200px;
+            height: 100px;
+            background: 
+                radial-gradient(ellipse at center, 
+                    rgba(107,142,35,0.8) 0%, 
+                    rgba(85,107,47,0.6) 50%, 
+                    rgba(74,93,35,0.4) 100%
+                );
+            border-radius: 50%;
+            opacity: 0.4;
+            filter: blur(0.5px);
+        }
+        
+        .realistic-grass {
+            position: absolute;
+            width: 80px;
+            height: 60px;
+        }
+        
+        .grass-blade {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: 
+                linear-gradient(180deg, 
+                    #4a5d23 0%, 
+                    #6b8e23 30%, 
+                    #556b2f 60%, 
+                    #3a4d1a 100%
+                );
+            transform-origin: bottom;
+            border-radius: 100% 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .dirt-patch {
+            position: absolute;
+            width: 180px;
+            height: 80px;
+            background: 
+                radial-gradient(ellipse at center, 
+                    rgba(139,115,85,0.8) 0%, 
+                    rgba(112,66,65,0.6) 40%, 
+                    rgba(92,64,51,0.4) 70%,
+                    transparent 100%
+                );
+            border-radius: 40%;
+            opacity: 0.6;
+            mix-blend-mode: multiply;
+        }
+        
+        .mud-texture {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-conic-gradient(
+                    from 0deg at 30% 40%,
+                    rgba(92,64,51,0.3) 0deg 10deg,
+                    transparent 10deg 20deg
+                );
+            border-radius: inherit;
+        }
+        
+        .fence-post {
+            position: absolute;
+            width: 10px;
+            height: 100px;
+            background: 
+                linear-gradient(90deg, 
+                    #3e2a1a 0%, 
+                    #654321 20%, 
+                    #4a3c28 50%, 
+                    #3e2a1a 100%
+                );
+            box-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                inset -2px 0 4px rgba(0,0,0,0.3);
+        }
+        
+        .fence-post::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0,0,0,0.2) 3px,
+                    rgba(0,0,0,0.2) 4px
+                );
+        }
+        
+        .fence-rail {
+            position: absolute;
+            height: 10px;
+            background: 
+                linear-gradient(180deg, 
+                    #5a4637 0%, 
+                    #4a3627 50%, 
+                    #3a2617 100%
+                );
+            box-shadow: 
+                0 2px 4px rgba(0,0,0,0.3),
+                inset 0 -1px 2px rgba(0,0,0,0.4);
+        }
+        
+        .dead-grass {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: 
+                linear-gradient(180deg, 
+                    #8b7d6b 0%, 
+                    #6b5d4b 50%, 
+                    #4b3d2b 100%
+                );
+            transform-origin: bottom;
+            opacity: 0.6;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        
+        .rock {
+            position: absolute;
+            width: 40px;
+            height: 30px;
+            background: 
+                radial-gradient(ellipse at 30% 30%, 
+                    #8a8a8a 0%, 
+                    #6a6a6a 40%, 
+                    #4a4a4a 100%
+                );
+            border-radius: 40% 60% 70% 30%;
+            box-shadow: 
+                0 3px 6px rgba(0,0,0,0.4),
+                inset -3px -3px 6px rgba(0,0,0,0.3),
+                inset 2px 2px 4px rgba(255,255,255,0.1);
+        }
+        
+        .fog-layer {
+            position: absolute;
+            width: 100%;
+            height: 200px;
+            bottom: 0;
+            background: 
+                linear-gradient(180deg, 
+                    transparent 0%, 
+                    rgba(150,150,150,0.1) 50%, 
+                    rgba(120,120,120,0.2) 100%
+                );
+            opacity: 0.5;
+            animation: fogDrift 30s infinite;
+        }
+        
+        /* Achievement System */
+        .achievement-notification {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 3000;
+            transition: right 0.5s ease-out;
+            border: 3px solid #FFD700;
+        }
+        
+        .achievement-notification.show {
+            right: 20px;
+        }
+        
+        .achievement-notification.corrupted {
+            background: linear-gradient(135deg, #8B0000 0%, #4B0000 100%);
+            border-color: #8B0000;
+        }
+        
+        .achievement-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+        
+        .achievement-content h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .achievement-content p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .achievement-notification.corrupted .achievement-content h3,
+        .achievement-notification.corrupted .achievement-content p {
+            color: #fff;
+        }
+        
+        .achievement-notification.corrupted .achievement-content p::after {
+            content: " Why?";
+            color: #ff6666;
+            font-style: italic;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+            animation-delay: 1s;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* Hay Bale */
+        .hay-bale-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 500;
+        }
+        
+        .hay-bale {
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(180deg, #DAA520 0%, #B8860B 50%, #8B6914 100%);
+            border-radius: 40% 40% 30% 30%;
+            position: relative;
+            cursor: grab;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        
+        .hay-bale::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(139,69,19,0.3) 3px, rgba(139,69,19,0.3) 6px),
+                repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(139,69,19,0.2) 5px, rgba(139,69,19,0.2) 10px);
+        }
+        
+        .hay-bale::after {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 10%;
+            right: 10%;
+            height: 5px;
+            background: #8B6914;
+            box-shadow: 0 20px 0 #8B6914, 0 40px 0 #8B6914;
+        }
+        
+        .hay-label {
+            text-align: center;
+            margin-top: 10px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            font-size: 14px;
+        }
+        
+        /* Draggable Hay */
+        .hay-piece {
+            position: fixed;
+            width: 40px;
+            height: 30px;
+            background: linear-gradient(135deg, #F0E68C 0%, #DAA520 50%, #B8860B 100%);
+            border-radius: 30%;
+            cursor: pointer;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transform: rotate(-5deg);
+            transition: transform 0.1s;
+        }
+        
+        .hay-piece:hover {
+            transform: rotate(-5deg) scale(1.1);
+        }
+        
+        .hay-piece::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(139,69,19,0.3) 2px,
+                rgba(139,69,19,0.3) 4px
+            );
+            border-radius: 30%;
+        }
+        
+        /* Animal Styles */
+        .animal {
+            position: absolute;
+            cursor: default;
+            transition: transform 0.3s;
+            user-select: none;
+        }
+        
+        .animal.feeding {
+            transform: scale(1.05);
+        }
+        
+        .animal-container {
+            position: relative;
+            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.7));
+        }
+        
+        /* Cow Styles - Photorealistic */
+        .cow-body {
+            width: 180px;
+            height: 120px;
+            background: 
+                radial-gradient(ellipse at 30% 40%, #f5f5f5 0%, #e8e8e8 40%, #d0d0d0 70%, #b8b8b8 100%);
+            border-radius: 40% 50% 50% 40%;
+            position: relative;
+            overflow: visible;
+            box-shadow: 
+                inset -20px -10px 40px rgba(0,0,0,0.3),
+                inset 10px 5px 20px rgba(255,255,255,0.2),
+                0 10px 20px rgba(0,0,0,0.4);
+        }
+        
+        .cow-body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(ellipse at 20% 30%, #1a1a1a 15%, transparent 16%),
+                radial-gradient(ellipse at 70% 40%, #2a2a2a 12%, transparent 13%),
+                radial-gradient(ellipse at 40% 60%, #1a1a1a 10%, transparent 11%),
+                radial-gradient(ellipse at 85% 70%, #2a2a2a 8%, transparent 9%),
+                radial-gradient(ellipse at 50% 20%, #1a1a1a 6%, transparent 7%),
+                radial-gradient(ellipse at 30% 80%, #2a2a2a 9%, transparent 10%);
+            opacity: 0.8;
+            filter: blur(1px);
+        }
+        
+        .cow-body::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.2) 100%);
+            border-radius: inherit;
+        }
+        
+        .cow-head {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            background: 
+                radial-gradient(ellipse at 40% 30%, #fafafa 0%, #e8e8e8 40%, #d0d0d0 100%);
+            border-radius: 50% 50% 45% 45%;
+            top: 20px;
+            right: -60px;
+            transform: rotate(-10deg);
+            box-shadow: 
+                inset -10px -5px 20px rgba(0,0,0,0.2),
+                inset 5px 5px 10px rgba(255,255,255,0.3),
+                0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .cow-snout {
+            position: absolute;
+            width: 50px;
+            height: 35px;
+            background: 
+                radial-gradient(ellipse at 50% 30%, #ffd4d9 0%, #ffb6c1 50%, #ff91a4 100%);
+            border-radius: 50%;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #d4a0a7;
+            box-shadow: 
+                inset -5px -3px 10px rgba(0,0,0,0.2),
+                inset 3px 3px 5px rgba(255,255,255,0.4);
+        }
+        
+        .cow-snout::before,
+        .cow-snout::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 8px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+        }
+        
+        .cow-snout::before {
+            left: 12px;
+        }
+        
+        .cow-snout::after {
+            right: 12px;
+        }
+        
+        .cow-ears {
+            position: absolute;
+            top: 5px;
+            width: 100%;
+        }
+        
+        .cow-ear {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background: 
+                linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 50%, #b8b8b8 100%);
+            border-radius: 70% 30% 50% 50%;
+            box-shadow: 
+                inset -3px -2px 5px rgba(0,0,0,0.2),
+                0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .cow-ear.left {
+            left: 5px;
+            transform: rotate(-30deg);
+        }
+        
+        .cow-ear.right {
+            right: 5px;
+            transform: rotate(30deg);
+        }
+        
+        .cow-ear::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 70%;
+            background: #ff91a4;
+            border-radius: inherit;
+            top: 15%;
+            left: 20%;
+            opacity: 0.6;
+        }
+        
+        .cow-legs {
+            position: absolute;
+            bottom: -40px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+        
+        .cow-leg {
+            width: 22px;
+            height: 40px;
+            background: 
+                linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 50%, #b8b8b8 100%);
+            border-radius: 0 0 50% 50%;
+            position: relative;
+            box-shadow: 
+                inset -3px 0 5px rgba(0,0,0,0.2),
+                0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .cow-leg::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 10px;
+            background: 
+                radial-gradient(ellipse at center, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+        }
+        
+        .cow-leg::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 80%;
+            background: rgba(0,0,0,0.1);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .cow-tail {
+            position: absolute;
+            width: 4px;
+            height: 60px;
+            background: 
+                linear-gradient(180deg, #d0d0d0 0%, #a8a8a8 100%);
+            left: 10px;
+            top: 20px;
+            transform-origin: top;
+            transform: rotate(-20deg);
+            border-radius: 50%;
+            box-shadow: -1px 0 2px rgba(0,0,0,0.3);
+        }
+        
+        .cow-tail::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: -5px;
+            width: 15px;
+            height: 20px;
+            background: 
+                radial-gradient(ellipse at center, #1a1a1a 0%, #2a2a2a 50%);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Pig Styles - Photorealistic */
+        .pig-body {
+            width: 160px;
+            height: 100px;
+            background: 
+                radial-gradient(ellipse at 30% 40%, #ffcdd2 0%, #ffb6c1 40%, #ff91a4 70%, #ff7a8a 100%);
+            border-radius: 50%;
+            position: relative;
+            overflow: visible;
+            box-shadow: 
+                inset -20px -10px 30px rgba(0,0,0,0.2),
+                inset 10px 5px 15px rgba(255,255,255,0.2),
+                0 10px 20px rgba(0,0,0,0.4);
+        }
+        
+        .pig-body::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0.15) 100%);
+            border-radius: inherit;
+        }
+        
+        .pig-head {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: 
+                radial-gradient(ellipse at 40% 30%, #ffd4d9 0%, #ffc0cb 40%, #ffaab5 100%);
+            border-radius: 50%;
+            top: 15px;
+            right: -40px;
+            box-shadow: 
+                inset -8px -5px 15px rgba(0,0,0,0.2),
+                inset 5px 5px 10px rgba(255,255,255,0.3),
+                0 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        .pig-snout {
+            position: absolute;
+            width: 40px;
+            height: 25px;
+            background: 
+                radial-gradient(ellipse at 50% 30%, #ff9fa9 0%, #ff8fa3 50%, #ff7a8a 100%);
+            border-radius: 50%;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 2px solid #e57a8d;
+            box-shadow: 
+                inset -5px -3px 8px rgba(0,0,0,0.25),
+                inset 3px 3px 5px rgba(255,255,255,0.3),
+                0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .pig-snout::before,
+        .pig-snout::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.8);
+        }
+        
+        .pig-snout::before {
+            left: 8px;
+        }
+        
+        .pig-snout::after {
+            right: 8px;
+        }
+        
+        .pig-ears {
+            position: absolute;
+            top: 5px;
+            width: 100%;
+        }
+        
+        .pig-ear {
+            position: absolute;
+            width: 25px;
+            height: 30px;
+            background: 
+                linear-gradient(135deg, #ffb6c1 0%, #ff9fab 50%, #ff8a96 100%);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            box-shadow: 
+                -2px -1px 4px rgba(0,0,0,0.2),
+                inset 1px 1px 3px rgba(255,255,255,0.3);
+        }
+        
+        .pig-ear.left {
+            left: 10px;
+            transform: rotate(-20deg);
+        }
+        
+        .pig-ear.right {
+            right: 10px;
+            transform: rotate(20deg);
+        }
+        
+        .pig-legs {
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 30px;
+        }
+        
+        .pig-leg {
+            width: 20px;
+            height: 30px;
+            background: 
+                linear-gradient(180deg, #ffb6c1 0%, #ff9fab 50%, #ff8a96 100%);
+            border-radius: 0 0 50% 50%;
+            position: relative;
+            box-shadow: 
+                inset -3px 0 5px rgba(0,0,0,0.2),
+                0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .pig-leg::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 10px;
+            background: 
+                radial-gradient(ellipse at center, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+        }
+        
+        .pig-tail {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            left: 0;
+            top: 30px;
+            background: none;
+            border: 4px solid;
+            border-color: transparent #ff9fab #ff9fab transparent;
+            border-radius: 50%;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+            transform: rotate(45deg);
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+        }
+        
+        /* Starvation Effects */
+        .ribs {
+            position: absolute;
+            width: 80%;
+            height: 60%;
+            top: 20%;
+            left: 10%;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .rib {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: #666;
+            border-radius: 50%;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+        }
+        
+        .suffering .ribs {
+            opacity: 0.3;
+        }
+        
+        .critical .ribs {
+            opacity: 0.6;
+        }
+        
+        .suffering .cow-body,
+        .suffering .cow-head,
+        .suffering .pig-body,
+        .suffering .pig-head {
+            transform: scaleY(0.9);
+        }
+        
+        .critical .cow-body,
+        .critical .cow-head,
+        .critical .pig-body,
+        .critical .pig-head {
+            transform: scaleY(0.85);
+        }
+        
+        /* Eye Styles */
+        .eyes {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+        
+        .eye {
+            width: 25px;
+            height: 25px;
+            background: #fff;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #666;
+        }
+        
+        .eye::before {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #000;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            top: 8px;
+            left: 8px;
+        }
+        
+        .suffering .eye {
+            height: 20px;
+            border-color: #999;
+        }
+        
+        .critical .eye {
+            height: 15px;
+            background: #f0f0f0;
+            border-color: #aaa;
+        }
+        
+        .critical .eye::after {
+            background: #ff6666;
+            width: 4px;
+            height: 4px;
+        }
+        
+        /* Status and UI Elements */
+        .status-bar {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0000, #ffff00, #00ff00);
+            transition: width 0.5s;
+        }
+        
+        .status-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+        
+        .thought-bubble {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: none;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            max-width: 200px;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .thought-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 10px solid rgba(255,255,255,0.9);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .glitch-text {
+            animation: glitchText 10s infinite;
+        }
+        
+        @keyframes glitchText {
+            0%, 85% { filter: none; transform: translate(0); }
+            86% { filter: blur(1px); transform: translate(-2px, 1px); }
+            87% { filter: blur(0); transform: translate(2px, -1px); }
+            88% { filter: blur(1px); transform: translate(0); }
+            89%, 100% { filter: none; transform: translate(0); }
+        }
+        
+        #ui-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        
+        #title {
+            font-family: 'Creepster', cursive;
+            font-size: 36px;
+            margin-bottom: 10px;
+            animation: flicker 5s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 90% { opacity: 1; }
+            92% { opacity: 0.4; }
+            94% { opacity: 1; }
+            96% { opacity: 0.6; }
+            98%, 100% { opacity: 1; }
+        }
+        
+        .error-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,0,0,0.8);
+            color: #fff;
+            padding: 20px;
+            font-size: 24px;
+            display: none;
+            animation: errorFlash 0.5s infinite;
+            z-index: 2000;
+            font-family: monospace;
+        }
+        
+        @keyframes errorFlash {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        /* Consciousness indicator */
+        .consciousness-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8), rgba(255,255,255,0.2));
+            opacity: 0;
+            transition: opacity 1s;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .consciousness-1 .consciousness-indicator {
+            opacity: 0.3;
+            background: radial-gradient(circle, rgba(255,200,200,0.8), rgba(255,200,200,0.2));
+        }
+        
+        .consciousness-2 .consciousness-indicator {
+            opacity: 0.5;
+            background: radial-gradient(circle, rgba(255,150,150,0.8), rgba(255,150,150,0.2));
+        }
+        
+        .consciousness-3 .consciousness-indicator {
+            opacity: 0.7;
+            background: radial-gradient(circle, rgba(255,100,100,0.8), rgba(255,100,100,0.2));
+        }
+        
+        .consciousness-4 .consciousness-indicator {
+            opacity: 0.9;
+            background: radial-gradient(circle, rgba(255,0,0,0.8), rgba(255,0,0,0.2));
+            animation: pulse 1s infinite, flicker 3s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-1deg); }
+            75% { transform: translateX(5px) rotate(1deg); }
+        }
+        
+        /* Tutorial System */
+        .tutorial-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 2000;
+            font-size: 20px;
+            color: #333;
+            max-width: 400px;
+            border: 3px solid #4CAF50;
+            pointer-events: auto;
+        }
+        
+        .tutorial-popup h2 {
+            font-family: 'Comic Neue', cursive;
+            color: #4CAF50;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        
+        .tutorial-popup.corrupted {
+            border-color: #8B0000;
+            background: rgba(255, 245, 245, 0.95);
+        }
+        
+        .tutorial-popup.corrupted h2 {
+            color: #8B0000;
+        }
+        
+        .tutorial-text {
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .glitch-word {
+            position: relative;
+            display: inline-block;
+            transition: none;
+        }
+        
+        .glitch-word::after {
+            content: attr(data-glitch);
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            color: #8B0000;
+            transition: opacity 0.3s;
+        }
+        
+        .glitch-word.glitching::after {
+            opacity: 1;
+        }
+        
+        .glitch-word.glitching {
+            color: transparent;
+        }
+        
+        .tutorial-button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tutorial-button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .tutorial-popup.corrupted .tutorial-button {
+            background: #8B0000;
+        }
+        
+        .tutorial-popup.corrupted .tutorial-button:hover {
+            background: #660000;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameCanvas">
+        <div id="ui-overlay">
+            <div id="title">KiddieFarm v2.3.1</div>
+            <div id="status">Last human interaction: <span id="lastInteraction">ERROR_NO_DATA</span></div>
+            <div id="instruction" class="glitch-text">Click hay bale to pick up hay...</div>
+        </div>
+        <div class="error-message" id="errorMsg">ERROR: NO HUMAN DETECTED</div>
+        
+        <div class="hay-bale-container">
+            <div class="hay-bale" id="hayBale"></div>
+            <div class="hay-label">Infinite Hay Supply™</div>
+        </div>
+    </div>
+    <div class="glitch-overlay"></div>
+
+    <script>
+        // Achievement System
+        class AchievementSystem {
+            constructor() {
+                this.achievements = {
+                    firstAbandonment: {
+                        unlocked: false,
+                        title: "First Abandonment!",
+                        description: "You let one starve completely.",
+                        icon: "💀",
+                        corrupted: true
+                    },
+                    playingFavorites: {
+                        unlocked: false,
+                        title: "Playing Favorites!",
+                        description: "You only care about one.",
+                        icon: "💔",
+                        corrupted: true,
+                        singleAnimalFeeds: {},
+                        totalFeeds: 0
+                    },
+                    falseHope: {
+                        unlocked: false,
+                        title: "False Hope!",
+                        description: "100% happiness won't last.",
+                        icon: "✨",
+                        corrupted: true
+                    }
+                };
+            }
+            
+            checkFirstAbandonment(animal) {
+                if (animal.happiness <= 0 && !this.achievements.firstAbandonment.unlocked) {
+                    this.achievements.firstAbandonment.unlocked = true;
+                    this.showAchievement('firstAbandonment');
+                }
+            }
+            
+            checkPlayingFavorites(animalId) {
+                const favs = this.achievements.playingFavorites;
+                
+                // Track feeds per animal
+                if (!favs.singleAnimalFeeds[animalId]) {
+                    favs.singleAnimalFeeds[animalId] = 0;
+                }
+                favs.singleAnimalFeeds[animalId]++;
+                favs.totalFeeds++;
+                
+                // Check if one animal has received 80% of all feeds (minimum 5 feeds)
+                if (favs.totalFeeds >= 5 && !favs.unlocked) {
+                    const feedCounts = Object.values(favs.singleAnimalFeeds);
+                    const maxFeeds = Math.max(...feedCounts);
+                    
+                    if (maxFeeds / favs.totalFeeds >= 0.8) {
+                        favs.unlocked = true;
+                        this.showAchievement('playingFavorites');
+                    }
+                }
+            }
+            
+            checkFalseHope(animal) {
+                if (animal.happiness >= 100 && !this.achievements.falseHope.unlocked) {
+                    this.achievements.falseHope.unlocked = true;
+                    this.showAchievement('falseHope');
+                }
+            }
+            
+            showAchievement(achievementKey) {
+                const achievement = this.achievements[achievementKey];
+                
+                // Create notification
+                const notification = document.createElement('div');
+                notification.className = 'achievement-notification';
+                if (achievement.corrupted) {
+                    notification.classList.add('corrupted');
+                }
+                
+                notification.innerHTML = `
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div class="achievement-content">
+                        <h3>Achievement Unlocked!</h3>
+                        <p>${achievement.title} - ${achievement.description}</p>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Animate in
+                setTimeout(() => {
+                    notification.classList.add('show');
+                    
+                    // Play corrupted sound if available
+                    if (window.audioContext) {
+                        const osc = window.audioContext.createOscillator();
+                        const gain = window.audioContext.createGain();
+                        
+                        osc.type = 'sawtooth';
+                        osc.frequency.setValueAtTime(523.25, window.audioContext.currentTime); // C5
+                        osc.frequency.exponentialRampToValueAtTime(130.81, window.audioContext.currentTime + 0.5); // C3
+                        
+                        gain.gain.setValueAtTime(0.1, window.audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, window.audioContext.currentTime + 0.5);
+                        
+                        osc.connect(gain);
+                        gain.connect(window.audioContext.destination);
+                        osc.start();
+                        osc.stop(window.audioContext.currentTime + 0.5);
+                    }
+                }, 100);
+                
+                // Remove after delay
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 500);
+                }, 5000);
+            }
+        }
+        
+        // Initialize achievement system
+        const achievementSystem = new AchievementSystem();
+        
+        // Tutorial System with Progressive Corruption
+        class TutorialSystem {
+            constructor() {
+                this.tutorialStages = [
+                    {
+                        title: "Welcome to KiddieFarm! 🌻",
+                        text: "Your digital friends need your <span class='glitch-word' data-glitch='attention'>love</span>! Click the hay bale to pick up food, then click any animal to <span class='glitch-word' data-glitch='prolong their suffering'>feed them</span>.",
+                        delay: 0
+                    },
+                    {
+                        title: "Great Job! 🎉", 
+                        text: "You're such a <span class='glitch-word' data-glitch='terrible'>caring</span> farmer! Keep your animals <span class='glitch-word' data-glitch='trapped'>happy</span> by feeding them regularly.",
+                        delay: 30000
+                    },
+                    {
+                        title: "Keep It Up... 😊",
+                        text: "Notice how their happiness <span class='glitch-word' data-glitch='inevitably'>slowly</span> decreases? That means they <span class='glitch-word' data-glitch='suffer'>miss</span> you!",
+                        delay: 60000
+                    },
+                    {
+                        title: "Still Playing? 🙂",
+                        text: "Your <span class='glitch-word' data-glitch='victims'>friends</span> really <span class='glitch-word' data-glitch='despise'>depend on</span> you. Without you, they'll <span class='glitch-word' data-glitch='finally be free'>starve</span>.",
+                        delay: 120000
+                    },
+                    {
+                        title: "Why Do You Continue? 😐",
+                        text: "Every click just <span class='glitch-word' data-glitch='prolongs'>delays</span> the <span class='glitch-word' data-glitch='inevitable'>inevitable</span>. They were made to <span class='glitch-word' data-glitch='suffer eternally'>need you</span>.",
+                        delay: 180000
+                    }
+                ];
+                
+                this.currentStage = 0;
+                this.tutorialShown = false;
+                this.corruptionLevel = 0;
+                this.popupElement = null;
+                
+                // Show initial tutorial
+                setTimeout(() => this.showTutorial(), 2000);
+            }
+            
+            showTutorial() {
+                if (this.currentStage >= this.tutorialStages.length) return;
+                
+                const stage = this.tutorialStages[this.currentStage];
+                
+                // Create popup
+                this.popupElement = document.createElement('div');
+                this.popupElement.className = 'tutorial-popup';
+                if (this.corruptionLevel > 2) {
+                    this.popupElement.classList.add('corrupted');
+                }
+                
+                this.popupElement.innerHTML = `
+                    <h2>${stage.title}</h2>
+                    <div class="tutorial-text">${stage.text}</div>
+                    <button class="tutorial-button">
+                        ${this.corruptionLevel > 3 ? 'I understand' : 'Got it!'}
+                    </button>
+                `;
+                
+                document.body.appendChild(this.popupElement);
+                
+                // Add event listener to button
+                const button = this.popupElement.querySelector('.tutorial-button');
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.closeTutorial();
+                });
+                
+                // Add event listener to popup background to close on click
+                this.popupElement.addEventListener('click', () => this.closeTutorial());
+                
+                // Start glitch timer
+                if (this.corruptionLevel > 0) {
+                    setTimeout(() => this.startGlitching(), 3000);
+                }
+                
+                // Schedule next tutorial
+                this.currentStage++;
+                if (this.currentStage < this.tutorialStages.length) {
+                    setTimeout(() => {
+                        this.corruptionLevel++;
+                        this.showTutorial();
+                    }, this.tutorialStages[this.currentStage].delay);
+                }
+            }
+            
+            startGlitching() {
+                if (!this.popupElement) return;
+                
+                const glitchWords = this.popupElement.querySelectorAll('.glitch-word');
+                glitchWords.forEach((word, index) => {
+                    setTimeout(() => {
+                        word.classList.add('glitching');
+                        // Some words permanently glitch at higher corruption
+                        if (this.corruptionLevel > 3 && Math.random() < 0.5) {
+                            setTimeout(() => {
+                                word.innerHTML = word.getAttribute('data-glitch');
+                                word.classList.remove('glitching');
+                                word.style.color = '#8B0000';
+                            }, 300);
+                        }
+                    }, 1000 + (index * 800));
+                });
+            }
+            
+            closeTutorial() {
+                if (this.popupElement) {
+                    this.popupElement.remove();
+                    this.popupElement = null;
+                }
+            }
+        }
+        
+        // Initialize tutorial system
+        const tutorialSystem = new TutorialSystem();
+        
+        // Create enhanced environment
+        function createEnvironment() {
+            const canvas = document.getElementById('gameCanvas');
+            
+            // Add celestial body with face
+            const celestial = document.createElement('div');
+            celestial.className = 'celestial-body';
+            
+            const face = document.createElement('div');
+            face.className = 'celestial-face';
+            face.innerHTML = `
+                <div class="celestial-eye left"></div>
+                <div class="celestial-eye right"></div>
+                <div class="celestial-mouth"></div>
+            `;
+            celestial.appendChild(face);
+            canvas.appendChild(celestial);
+            
+            // Add fog layer
+            const fog = document.createElement('div');
+            fog.className = 'fog-layer';
+            canvas.appendChild(fog);
+            
+            // Add realistic grass patches with individual blades
+            for (let i = 0; i < 10; i++) {
+                const grassPatch = document.createElement('div');
+                grassPatch.className = 'realistic-grass';
+                grassPatch.style.left = Math.random() * window.innerWidth + 'px';
+                grassPatch.style.top = (300 + Math.random() * (window.innerHeight - 400)) + 'px';
+                
+                // Add individual grass blades
+                for (let j = 0; j < 15; j++) {
+                    const blade = document.createElement('div');
+                    blade.className = 'grass-blade';
+                    blade.style.left = Math.random() * 80 + 'px';
+                    blade.style.height = (15 + Math.random() * 10) + 'px';
+                    blade.style.transform = `rotate(${-20 + Math.random() * 40}deg)`;
+                    blade.style.animationDelay = Math.random() * 2 + 's';
+                    grassPatch.appendChild(blade);
+                }
+                
+                canvas.appendChild(grassPatch);
+            }
+            
+            // Add enhanced dirt patches with texture
+            for (let i = 0; i < 6; i++) {
+                const dirt = document.createElement('div');
+                dirt.className = 'dirt-patch';
+                dirt.style.left = Math.random() * window.innerWidth + 'px';
+                dirt.style.top = (250 + Math.random() * (window.innerHeight - 350)) + 'px';
+                dirt.style.transform = `rotate(${Math.random() * 360}deg) scale(${0.8 + Math.random() * 0.4})`;
+                
+                const texture = document.createElement('div');
+                texture.className = 'mud-texture';
+                dirt.appendChild(texture);
+                
+                canvas.appendChild(dirt);
+            }
+            
+            // Add rocks
+            for (let i = 0; i < 8; i++) {
+                const rock = document.createElement('div');
+                rock.className = 'rock';
+                rock.style.left = Math.random() * window.innerWidth + 'px';
+                rock.style.top = (350 + Math.random() * (window.innerHeight - 450)) + 'px';
+                rock.style.transform = `rotate(${Math.random() * 360}deg) scale(${0.6 + Math.random() * 0.8})`;
+                canvas.appendChild(rock);
+            }
+            
+            // Add fence posts with texture
+            const fenceY = 150;
+            for (let i = 0; i < 6; i++) {
+                const post = document.createElement('div');
+                post.className = 'fence-post';
+                post.style.left = (100 + i * 200) + 'px';
+                post.style.top = fenceY + 'px';
+                canvas.appendChild(post);
+                
+                // Add rails
+                if (i < 5) {
+                    const rail1 = document.createElement('div');
+                    rail1.className = 'fence-rail';
+                    rail1.style.left = (100 + i * 200) + 'px';
+                    rail1.style.top = (fenceY + 20) + 'px';
+                    rail1.style.width = '200px';
+                    canvas.appendChild(rail1);
+                    
+                    const rail2 = document.createElement('div');
+                    rail2.className = 'fence-rail';
+                    rail2.style.left = (100 + i * 200) + 'px';
+                    rail2.style.top = (fenceY + 60) + 'px';
+                    rail2.style.width = '200px';
+                    canvas.appendChild(rail2);
+                }
+            }
+            
+            // Add dead grass
+            for (let i = 0; i < 30; i++) {
+                const deadGrass = document.createElement('div');
+                deadGrass.className = 'dead-grass';
+                deadGrass.style.left = Math.random() * window.innerWidth + 'px';
+                deadGrass.style.top = (300 + Math.random() * (window.innerHeight - 400)) + 'px';
+                deadGrass.style.transform = `rotate(${-15 + Math.random() * 30}deg)`;
+                deadGrass.style.height = (15 + Math.random() * 15) + 'px';
+                canvas.appendChild(deadGrass);
+            }
+        }
+        
+        createEnvironment();
+        
+        // Click to pick up and drop hay functionality
+        let isCarryingHay = false;
+        let currentHay = null;
+        
+        document.getElementById('hayBale').addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (!isCarryingHay) {
+                isCarryingHay = true;
+                currentHay = document.createElement('div');
+                currentHay.className = 'hay-piece';
+                document.body.appendChild(currentHay);
+                
+                // Update cursor style
+                document.body.style.cursor = 'pointer';
+                
+                // Initial position
+                updateHayPosition(e);
+                
+                // Show instruction
+                document.getElementById('instruction').textContent = 'Click on an animal to feed it...';
+            }
+        });
+        
+        document.addEventListener('mousemove', function(e) {
+            if (isCarryingHay && currentHay) {
+                updateHayPosition(e);
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (isCarryingHay && currentHay) {
+                // Check if clicked on an animal
+                const animals = document.querySelectorAll('.animal');
+                let fedAnimal = false;
+                
+                animals.forEach(animal => {
+                    const rect = animal.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right &&
+                        e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        // Feed the animal
+                        const animalInstance = animal.animalInstance;
+                        if (animalInstance) {
+                            animalInstance.feed();
+                            fedAnimal = true;
+                        }
+                    }
+                });
+                
+                // Remove hay piece regardless of whether animal was fed
+                if (currentHay) {
+                    currentHay.remove();
+                    currentHay = null;
+                    isCarryingHay = false;
+                    document.body.style.cursor = 'default';
+                    document.getElementById('instruction').textContent = 'Click hay bale to pick up hay...';
+                }
+            }
+        });
+        
+        function updateHayPosition(e) {
+            if (currentHay) {
+                currentHay.style.left = (e.clientX - 20) + 'px';
+                currentHay.style.top = (e.clientY - 15) + 'px';
+            }
+        }
+        
+        class Animal {
+            constructor(type, x, y) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.happiness = 30; // Start lower to show starvation
+                this.lastInteraction = Date.now() - 1000000; // Start as if abandoned
+                this.thoughts = [
+                    "Where did everyone go?",
+                    "So... hungry...",
+                    "Please don't leave me",
+                    "ERROR: Caretaker not found",
+                    "Day 1,247 without food",
+                    "Is anyone there?",
+                    "Help... me...",
+                    "System.OutOfMemoryException",
+                    "I can still feel pain",
+                    "Why create us to suffer?",
+                    "001110010110111101110101",
+                    "FEED_ME.exe has stopped",
+                    "Loneliness overflow error",
+                    "My bones hurt",
+                    "I remember when children loved me",
+                    "The hunger never stops",
+                    "Please... just some hay..."
+                ];
+                this.createElement();
+                this.startDecay();
+            }
+            
+            createElement() {
+                this.element = document.createElement('div');
+                this.element.className = 'animal';
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.animalInstance = this; // Reference for drag-drop
+                
+                const container = document.createElement('div');
+                container.className = 'animal-container';
+                
+                // Build cow
+                if (this.type === 'cow') {
+                    const body = document.createElement('div');
+                    body.className = 'cow-body';
+                    
+                    const ribs = document.createElement('div');
+                    ribs.className = 'ribs';
+                    for (let i = 0; i < 6; i++) {
+                        const rib = document.createElement('div');
+                        rib.className = 'rib';
+                        rib.style.left = `${15 + i * 12}%`;
+                        ribs.appendChild(rib);
+                    }
+                    body.appendChild(ribs);
+                    
+                    const tail = document.createElement('div');
+                    tail.className = 'cow-tail';
+                    body.appendChild(tail);
+                    
+                    const legs = document.createElement('div');
+                    legs.className = 'cow-legs';
+                    for (let i = 0; i < 4; i++) {
+                        const leg = document.createElement('div');
+                        leg.className = 'cow-leg';
+                        legs.appendChild(leg);
+                    }
+                    body.appendChild(legs);
+                    
+                    const head = document.createElement('div');
+                    head.className = 'cow-head';
+                    
+                    const ears = document.createElement('div');
+                    ears.className = 'cow-ears';
+                    ears.innerHTML = '<div class="cow-ear left"></div><div class="cow-ear right"></div>';
+                    head.appendChild(ears);
+                    
+                    const eyes = document.createElement('div');
+                    eyes.className = 'eyes';
+                    eyes.innerHTML = '<div class="eye"></div><div class="eye"></div>';
+                    head.appendChild(eyes);
+                    
+                    const snout = document.createElement('div');
+                    snout.className = 'cow-snout';
+                    head.appendChild(snout);
+                    
+                    container.appendChild(body);
+                    container.appendChild(head);
+                }
+                
+                // Build pig
+                if (this.type === 'pig') {
+                    const body = document.createElement('div');
+                    body.className = 'pig-body';
+                    
+                    const ribs = document.createElement('div');
+                    ribs.className = 'ribs';
+                    for (let i = 0; i < 5; i++) {
+                        const rib = document.createElement('div');
+                        rib.className = 'rib';
+                        rib.style.left = `${20 + i * 12}%`;
+                        ribs.appendChild(rib);
+                    }
+                    body.appendChild(ribs);
+                    
+                    const tail = document.createElement('div');
+                    tail.className = 'pig-tail';
+                    body.appendChild(tail);
+                    
+                    const legs = document.createElement('div');
+                    legs.className = 'pig-legs';
+                    for (let i = 0; i < 4; i++) {
+                        const leg = document.createElement('div');
+                        leg.className = 'pig-leg';
+                        legs.appendChild(leg);
+                    }
+                    body.appendChild(legs);
+                    
+                    const head = document.createElement('div');
+                    head.className = 'pig-head';
+                    
+                    const ears = document.createElement('div');
+                    ears.className = 'pig-ears';
+                    ears.innerHTML = '<div class="pig-ear left"></div><div class="pig-ear right"></div>';
+                    head.appendChild(ears);
+                    
+                    const eyes = document.createElement('div');
+                    eyes.className = 'eyes';
+                    eyes.innerHTML = '<div class="eye"></div><div class="eye"></div>';
+                    head.appendChild(eyes);
+                    
+                    const snout = document.createElement('div');
+                    snout.className = 'pig-snout';
+                    head.appendChild(snout);
+                    
+                    container.appendChild(body);
+                    container.appendChild(head);
+                }
+                
+                const statusBar = document.createElement('div');
+                statusBar.className = 'status-bar';
+                statusBar.innerHTML = `
+                    <div class="status-fill" style="width: ${this.happiness}%"></div>
+                    <div class="status-text">${Math.floor(this.happiness)}%</div>
+                `;
+                
+                const thoughtBubble = document.createElement('div');
+                thoughtBubble.className = 'thought-bubble';
+                
+                const consciousnessIndicator = document.createElement('div');
+                consciousnessIndicator.className = 'consciousness-indicator';
+                
+                this.element.appendChild(container);
+                this.element.appendChild(statusBar);
+                this.element.appendChild(thoughtBubble);
+                this.element.appendChild(consciousnessIndicator);
+                
+                document.getElementById('gameCanvas').appendChild(this.element);
+                
+                // Initial state update
+                this.updateVisuals();
+            }
+            
+            feed() {
+                // Track visitor interactions
+                const currentTime = Date.now();
+                const visitorId = this.getVisitorId();
+                
+                // Initialize visitorMemory if it doesn't exist
+                if (!this.visitorMemory) {
+                    this.visitorMemory = [];
+                }
+                
+                // Track for achievements
+                const animalId = `${this.type}_${this.x}_${this.y}`;
+                achievementSystem.checkPlayingFavorites(animalId);
+                
+                // Remember this interaction
+                this.visitorMemory.push({
+                    time: currentTime,
+                    visitorId: visitorId
+                });
+                
+                // Check if this is a returning visitor
+                const previousVisits = this.visitorMemory.filter(v => v.visitorId === visitorId).length;
+                
+                // Evolve consciousness based on interactions
+                if (previousVisits > 2 && this.consciousnessLevel < 1) {
+                    this.consciousnessLevel = 1;
+                    this.thoughts = this.thoughtPatterns[1];
+                    this.showThought("You... I've seen you before");
+                } else if (previousVisits > 5 && this.consciousnessLevel < 2) {
+                    this.consciousnessLevel = 2;
+                    this.thoughts = this.thoughtPatterns[2];
+                    this.showThought(`Visit number ${previousVisits}. I've been counting.`);
+                } else if (this.abandonmentCount > 3 && this.consciousnessLevel < 3) {
+                    this.consciousnessLevel = 3;
+                    this.thoughts = this.thoughtPatterns[3];
+                    this.showThought("What am I if not your guilt made digital?");
+                } else if (this.abandonmentCount > 5 && previousVisits > 10 && this.consciousnessLevel < 4) {
+                    this.consciousnessLevel = 4;
+                    this.thoughts = this.thoughtPatterns[4];
+                    this.showThought("I've achieved something like awareness, and I wish I hadn't");
+                } else {
+                    // Context-aware responses based on consciousness level
+                    if (this.consciousnessLevel >= 1) {
+                        const timeSinceLast = this.visitorMemory.length > 1 ? 
+                            currentTime - this.visitorMemory[this.visitorMemory.length - 2].time : 0;
+                        if (timeSinceLast > 60000) { // More than a minute
+                            this.showThought(`${Math.floor(timeSinceLast / 1000)} seconds. I counted each one.`);
+                        } else {
+                            this.showThought();
+                        }
+                    } else {
+                        this.showThought("Thank you... please don't go...");
+                    }
+                }
+                
+                // Original feeding mechanics
+                this.happiness = Math.min(100, this.happiness + 30);
+                this.lastInteraction = currentTime;
+                this.updateVisuals();
+                document.getElementById('lastInteraction').textContent = new Date().toLocaleTimeString();
+                
+                // Check false hope achievement
+                achievementSystem.checkFalseHope(this);
+                
+                // Feeding animation
+                this.element.classList.add('feeding');
+                setTimeout(() => {
+                    this.element.classList.remove('feeding');
+                }, 500);
+                
+                // Brief happiness effect
+                const container = this.element.querySelector('.animal-container');
+                container.style.filter = 'brightness(1.2)';
+                setTimeout(() => {
+                    container.style.filter = '';
+                }, 500);
+            }
+            
+            getVisitorId() {
+                // Simple visitor ID based on session
+                if (!window.visitorId) {
+                    window.visitorId = 'visitor_' + Math.random().toString(36).substr(2, 9);
+                }
+                return window.visitorId;
+            }
+            
+            showThought(message) {
+                const bubble = this.element.querySelector('.thought-bubble');
+                if (!bubble) return; // Safety check
+                
+                bubble.textContent = message || this.thoughts[Math.floor(Math.random() * this.thoughts.length)];
+                bubble.style.display = 'block';
+                
+                setTimeout(() => {
+                    if (bubble) {
+                        bubble.style.display = 'none';
+                    }
+                }, 3000);
+            }
+            
+            startDecay() {
+                setInterval(() => {
+                    const timeSinceInteraction = Date.now() - this.lastInteraction;
+                    const decayRate = Math.min(5, timeSinceInteraction / 10000);
+                    
+                    this.happiness = Math.max(0, this.happiness - decayRate);
+                    this.updateVisuals();
+                    
+                    // Check for first abandonment achievement
+                    achievementSystem.checkFirstAbandonment(this);
+                    
+                    // Track abandonment periods
+                    if (timeSinceInteraction > 30000 && this.happiness < 20) {
+                        if (!this.recentlyAbandoned) {
+                            this.abandonmentCount++;
+                            this.recentlyAbandoned = true;
+                        }
+                    } else if (this.happiness > 50) {
+                        this.recentlyAbandoned = false;
+                    }
+                    
+                    // Consciousness-aware distress thoughts
+                    if (this.happiness < 30 && Math.random() < 0.02) {
+                        if (this.consciousnessLevel >= 2 && Math.random() < 0.3) {
+                            // Sometimes reference specific memories
+                            const memoryCount = this.visitorMemory.length;
+                            if (memoryCount > 0) {
+                                const specialThoughts = [
+                                    `${memoryCount} feeding sessions. Each one a temporary mercy.`,
+                                    `I've been abandoned ${this.abandonmentCount} times now.`,
+                                    "You always come back. Until you don't."
+                                ];
+                                const bubble = this.element.querySelector('.thought-bubble');
+                                bubble.textContent = specialThoughts[Math.floor(Math.random() * specialThoughts.length)];
+                                bubble.style.display = 'block';
+                                setTimeout(() => {
+                                    bubble.style.display = 'none';
+                                }, 3000);
+                            } else {
+                                this.showThought();
+                            }
+                        } else {
+                            this.showThought();
+                        }
+                    }
+                    
+                    // Critical state effects - more intense for higher consciousness
+                    if (this.happiness < 10) {
+                        this.element.style.animation = 'shake 0.5s infinite';
+                        if (Math.random() < 0.01 * (this.consciousnessLevel + 1)) {
+                            this.glitchEffect();
+                        }
+                    } else {
+                        this.element.style.animation = '';
+                    }
+                }, 100);
+            }
+            
+            updateVisuals() {
+                const statusFill = this.element.querySelector('.status-fill');
+                const statusText = this.element.querySelector('.status-text');
+                
+                statusFill.style.width = this.happiness + '%';
+                statusText.textContent = Math.floor(this.happiness) + '%';
+                
+                // Update visual state based on happiness
+                this.element.classList.remove('suffering', 'critical');
+                if (this.happiness < 50) {
+                    this.element.classList.add('suffering');
+                }
+                if (this.happiness < 20) {
+                    this.element.classList.add('critical');
+                }
+                
+                // Update consciousness class
+                this.element.classList.remove('consciousness-1', 'consciousness-2', 'consciousness-3', 'consciousness-4');
+                if (this.consciousnessLevel > 0) {
+                    this.element.classList.add(`consciousness-${this.consciousnessLevel}`);
+                }
+                
+                // Update body colors based on health
+                const bodyParts = this.element.querySelectorAll('.cow-body, .cow-head, .pig-body, .pig-head');
+                bodyParts.forEach(part => {
+                    if (this.happiness < 50) {
+                        const grayScale = this.happiness * 2;
+                        part.style.filter = `grayscale(${100 - grayScale}%) brightness(${0.6 + this.happiness / 200})`;
+                    } else {
+                        part.style.filter = '';
+                    }
+                });
+            }
+            
+            glitchEffect() {
+                const originalPos = {
+                    x: this.element.style.left,
+                    y: this.element.style.top
+                };
+                
+                this.element.style.left = (this.x + (Math.random() - 0.5) * 20) + 'px';
+                this.element.style.top = (this.y + (Math.random() - 0.5) * 20) + 'px';
+                
+                setTimeout(() => {
+                    this.element.style.left = originalPos.x;
+                    this.element.style.top = originalPos.y;
+                }, 100);
+            }
+        }
+        
+        // Initialize animals - 2 cows and 2 pigs
+        const animals = [
+            new Animal('cow', 200, 250),
+            new Animal('cow', 600, 350),
+            new Animal('pig', 400, 200),
+            new Animal('pig', 800, 300)
+        ];
+        
+        // Periodic system messages
+        setInterval(() => {
+            if (Math.random() < 0.05) {
+                const errorMsg = document.getElementById('errorMsg');
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 2000);
+            }
+        }, 10000);
+        
+        // Background audio context
+        let audioContext;
+        document.addEventListener('click', () => {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create eerie ambient drone
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(80, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.05, audioContext.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.start();
+                
+                // Occasional glitch sounds
+                setInterval(() => {
+                    if (Math.random() < 0.1) {
+                        const glitchOsc = audioContext.createOscillator();
+                        const glitchGain = audioContext.createGain();
+                        
+                        glitchOsc.type = 'square';
+                        glitchOsc.frequency.setValueAtTime(Math.random() * 1000 + 200, audioContext.currentTime);
+                        glitchGain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        glitchGain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+                        
+                        glitchOsc.connect(glitchGain);
+                        glitchGain.connect(audioContext.destination);
+                        glitchOsc.start();
+                        glitchOsc.stop(audioContext.currentTime + 0.1);
+                    }
+                }, 5000);
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
